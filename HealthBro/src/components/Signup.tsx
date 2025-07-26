@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Patient from './Patient';
 
 interface FormData {
   name: string;
@@ -21,6 +22,8 @@ const Signup: React.FC = () => {
     Phone: ''
   });
 
+  const [showPatientDashboard, setShowPatientDashboard] = useState(false);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -32,7 +35,16 @@ const Signup: React.FC = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     console.log('Form submitted:', formData);
+    
+    if (formData.Occupation === 'patient') {
+      setShowPatientDashboard(true);
+    }
+    //  logic for doctor 
   };
+
+  if (showPatientDashboard) {
+    return <Patient/>;
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-[#F1EDF4]">
@@ -146,26 +158,24 @@ const Signup: React.FC = () => {
             />
           </div>
 
-           <div>
-              <label className="block text-gray-700 text-sm font-medium mb-1" htmlFor="gender">
-                Gender
-              </label>
-              <select
-                id="gender"
-                name="gender"
-                value={formData.gender}
-                onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#b8a9c9] focus:border-transparent"
-                required
-              >
-                <option value="">Select your Gender</option>
-                <option value="Male">Male</option>
-                <option value="Female">Female</option>  
-                <option value="Other">Other</option>    
-              </select>
-            </div>
-
-
+          <div>
+            <label className="block text-gray-700 text-sm font-medium mb-1" htmlFor="gender">
+              Gender
+            </label>
+            <select
+              id="gender"
+              name="gender"
+              value={formData.gender}
+              onChange={handleChange}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#b8a9c9] focus:border-transparent"
+              required
+            >
+              <option value="">Select your Gender</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>  
+              <option value="Other">Other</option>    
+            </select>
+          </div>
 
           <div className="pt-2">
             <button
@@ -181,7 +191,6 @@ const Signup: React.FC = () => {
             <a href="#" className="text-[#d099d9] hover:text-gray-800 pl-1">Sign in</a>
           </div>
         </form>
-       
       </div>
     </div>
   );
