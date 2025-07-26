@@ -49,13 +49,13 @@ const Patient = () => {
 
   return (
     <div className="min-h-screen flex flex-col" style={{ backgroundColor: '#F1EDF4' }}>
-      {/* Larger Header Section */}
+      {/*  Header Section */}
       <div className="text-black p-4 shadow-md" style={{ backgroundColor: '#d099d9' }}>
         <h1 className="text-2xl font-bold text-center">Patient Dashboard</h1>
       </div>
 
       <div className="flex flex-1">
-        {/* Sidebar Navigation with Icons */}
+        {/* Sidebar Navigation */}
         <div className="w-48 bg-[#F1EDF4] p-2 shadow">
           <nav className="space-y-2">
             <button
@@ -116,7 +116,7 @@ const Patient = () => {
           </nav>
         </div>
 
-        {/* Main Content Area - Centered with margin */}
+        {/* Main Content Area*/}
         <div className="flex-1 bg-white p-6 overflow-auto">
           <div className="max-w-4xl mx-auto mt-4">
             {renderTabContent()}
