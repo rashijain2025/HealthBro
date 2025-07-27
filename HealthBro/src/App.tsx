@@ -1,30 +1,16 @@
 
-import './App.css'
-// import MedicalHistory from './components/MedicalHistory'
-// import Prescription from './components/Prescription'
+// import './App.css'
+import Signup from './components/Signup'
+// import Patient from './components/Patient'
+// import Patient from './components/Patient'
 // import Profile from './components/Profile'
-import RiskPredictor from './components/RiskPredictor'
-// import SymptomsChecker from './components/SymptomsChecker'
-
-
-
-
-
+// import Doctor from './components/Doctor'
 function App() {
   
   return (
     <>
-    {/* <Signup /> */}
- 
-   {/* <Prescription prescriptions={[]} />
-   <MedicalHistory emergencies={[]} />
-   <Profile />
-   <SymptomsChecker /> */}
-    <RiskPredictor />
-  
+    <Signup />
    
-
-
     </>
   )
 }
