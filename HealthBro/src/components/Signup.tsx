@@ -1,14 +1,18 @@
 import React, { useState } from 'react';
+import { FiUser, FiCalendar, FiMail, FiPhone, FiMapPin, FiLock } from 'react-icons/fi';
+import { FaUserShield, FaClinicMedical } from 'react-icons/fa';
 import Patient from './Patient';
 
 interface FormData {
   name: string;
   dob: string;
   email: string;
-  Occupation: string;
+  role: string;
   location: string;
   gender: string;
-  Phone: string; 
+  phone: string;
+  password: string;
+  confirmPassword: string;
 }
 
 const Signup: React.FC = () => {
@@ -16,13 +20,16 @@ const Signup: React.FC = () => {
     name: '',
     dob: '',
     email: '',
-    Occupation: '',
+    role: '',
     location: '',
     gender: '',
-    Phone: ''
+    phone: '',
+    password: '',
+    confirmPassword: ''
   });
 
   const [showPatientDashboard, setShowPatientDashboard] = useState(false);
+  const [errors, setErrors] = useState<Partial<FormData>>({});
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -30,165 +37,288 @@ const Signup: React.FC = () => {
       ...prev,
       [name]: value
     }));
+    if (errors[name as keyof FormData]) {
+      setErrors(prev => ({ ...prev, [name]: '' }));
+    }
+  };
+
+  const validateForm = (): boolean => {
+    const newErrors: Partial<FormData> = {};
+    
+    if (!formData.name) newErrors.name = 'Full name is required';
+    if (!formData.dob) newErrors.dob = 'Date of birth is required';
+    if (!formData.email) {
+      newErrors.email = 'Email is required';
+    } else if (!/^\S+@\S+\.\S+$/.test(formData.email)) {
+      newErrors.email = 'Email is invalid';
+    }
+    if (!formData.role) newErrors.role = 'Please select your role';
+    if (!formData.phone) newErrors.phone = 'Phone number is required';
+    if (!formData.password) {
+      newErrors.password = 'Password is required';
+    } else if (formData.password.length < 8) {
+      newErrors.password = 'Password must be at least 8 characters';
+    }
+    if (formData.password !== formData.confirmPassword) {
+      newErrors.confirmPassword = 'Passwords do not match';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Form submitted:', formData);
     
-    if (formData.Occupation === 'patient') {
+    if (!validateForm()) return;
+
+    console.log('Form submitted:', formData);
+    localStorage.setItem('userProfile', JSON.stringify(formData));
+    
+    if (formData.role === 'patient') {
       setShowPatientDashboard(true);
     }
-    //  logic for doctor 
   };
 
   if (showPatientDashboard) {
-    return <Patient/>;
+    return <Patient />;
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-[#F1EDF4]">
-      <div className="w-full max-w-md bg-white rounded-xl shadow-lg overflow-hidden">
-        <div className="bg-[#d099d9] py-4 px-6">
-          <div className="flex items-center justify-center">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-gray-800 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
-            </svg>
-            <h1 className="text-2xl font-bold text-gray-800">HealthBro</h1>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-teal-50 p-4">
+      <div className="w-full max-w-2xl bg-white rounded-xl shadow-lg overflow-hidden">
+        <div className="bg-gradient-to-r from-blue-600 to-teal-500 py-6 px-8 text-white">
+          <div className="flex items-center justify-center space-x-3">
+            <FaClinicMedical className="h-8 w-8" />
+            <div>
+              <h1 className="text-2xl font-bold">HealthBro</h1>
+            </div>
           </div>
-          <p className="text-gray-600 text-center mt-1">Create your account</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+        <form onSubmit={handleSubmit} className="p-8 space-y-5">
           <div>
-            <label className="block text-gray-700 text-sm font-medium mb-1" htmlFor="name">
-              Full Name
-            </label>
-            <input
-              type="text"
-              id="name"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#b8a9c9] focus:border-transparent"
-              placeholder="John Doe"
-              required
-            />
+            <h2 className="text-xl font-semibold text-gray-800 mb-1">Create Account</h2>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-gray-700 text-sm font-medium mb-1" htmlFor="dob">
-                Date of Birth
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div className="space-y-1">
+              <label className="block text-sm font-medium text-gray-700" htmlFor="name">
+                Full Name <span className="text-red-500">*</span>
               </label>
-              <input
-                type="date"
-                id="dob"
-                name="dob"
-                value={formData.dob}
-                onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#b8a9c9] focus:border-transparent"
-                required
-              />
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <FiUser className="h-5 w-5 text-gray-400" />
+                </div>
+                <input
+                  type="text"
+                  id="name"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  className={`pl-10 w-full px-4 py-2 border ${errors.name ? 'border-red-300' : 'border-gray-300'} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
+                  placeholder="John Doe"
+                />
+              </div>
+              {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
             </div>
 
-            <div>
-              <label className="block text-gray-700 text-sm font-medium mb-1" htmlFor="Occupation">
-                Role
+            <div className="space-y-1">
+              <label className="block text-sm font-medium text-gray-700" htmlFor="dob">
+                Date of Birth <span className="text-red-500">*</span>
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <FiCalendar className="h-5 w-5 text-gray-400" />
+                </div>
+                <input
+                  type="date"
+                  id="dob"
+                  name="dob"
+                  value={formData.dob}
+                  onChange={handleChange}
+                  className={`pl-10 w-full px-4 py-2 border ${errors.dob ? 'border-red-300' : 'border-gray-300'} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
+                />
+              </div>
+              {errors.dob && <p className="text-red-500 text-xs mt-1">{errors.dob}</p>}
+            </div>
+
+            <div className="space-y-1">
+              <label className="block text-sm font-medium text-gray-700" htmlFor="email">
+                Email <span className="text-red-500">*</span>
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <FiMail className="h-5 w-5 text-gray-400" />
+                </div>
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  className={`pl-10 w-full px-4 py-2 border ${errors.email ? 'border-red-300' : 'border-gray-300'} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
+                  placeholder="email@example.com"
+                />
+              </div>
+              {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
+            </div>
+
+            <div className="space-y-1">
+              <label className="block text-sm font-medium text-gray-700" htmlFor="phone">
+                Phone <span className="text-red-500">*</span>
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <FiPhone className="h-5 w-5 text-gray-400" />
+                </div>
+                <input
+                  type="tel"
+                  id="phone"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  className={`pl-10 w-full px-4 py-2 border ${errors.phone ? 'border-red-300' : 'border-gray-300'} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
+                  placeholder="+1234567890"
+                />
+              </div>
+              {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone}</p>}
+            </div>
+
+            <div className="space-y-1">
+              <label className="block text-sm font-medium text-gray-700" htmlFor="role">
+                I am a <span className="text-red-500">*</span>
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <FaUserShield className="h-5 w-5 text-gray-400" />
+                </div>
+                <select
+                  id="role"
+                  name="role"
+                  value={formData.role}
+                  onChange={handleChange}
+                  className={`pl-10 w-full px-4 py-2 border ${errors.role ? 'border-red-300' : 'border-gray-300'} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none`}
+                >
+                  <option value="">Select Role</option>
+                  <option value="patient">Patient</option>
+                  <option value="doctor">Doctor</option>
+                </select>
+              </div>
+              {errors.role && <p className="text-red-500 text-xs mt-1">{errors.role}</p>}
+            </div>
+
+            <div className="space-y-1">
+              <label className="block text-sm font-medium text-gray-700" htmlFor="gender">
+                Gender <span className="text-red-500">*</span>
               </label>
               <select
-                id="Occupation"
-                name="Occupation"
-                value={formData.Occupation}
+                id="gender"
+                name="gender"
+                value={formData.gender}
                 onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#b8a9c9] focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 required
               >
-                <option value="">Select Role</option>
-                <option value="doctor">Doctor</option>
-                <option value="patient">Patient</option>    
+                <option value="">Select Gender</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+                <option value="other">Other</option>
               </select>
+            </div>
+
+            <div className="space-y-1">
+              <label className="block text-sm font-medium text-gray-700" htmlFor="location">
+                Location
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <FiMapPin className="h-5 w-5 text-gray-400" />
+                </div>
+                <input
+                  type="text"
+                  id="location"
+                  name="location"
+                  value={formData.location}
+                  onChange={handleChange}
+                  className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="City, State"
+                />
+              </div>
             </div>
           </div>
 
-          <div>
-            <label className="block text-gray-700 text-sm font-medium mb-1" htmlFor="email">
-              Email 
-            </label>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 pt-2">
+            <div className="space-y-1">
+              <label className="block text-sm font-medium text-gray-700" htmlFor="password">
+                Password <span className="text-red-500">*</span>
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <FiLock className="h-5 w-5 text-gray-400" />
+                </div>
+                <input
+                  type="password"
+                  id="password"
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  className={`pl-10 w-full px-4 py-2 border ${errors.password ? 'border-red-300' : 'border-gray-300'} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
+                  placeholder="••••••••"
+                />
+              </div>
+              {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password}</p>}
+            </div>
+
+            <div className="space-y-1">
+              <label className="block text-sm font-medium text-gray-700" htmlFor="confirmPassword">
+                Confirm Password <span className="text-red-500">*</span>
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <FiLock className="h-5 w-5 text-gray-400" />
+                </div>
+                <input
+                  type="password"
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  className={`pl-10 w-full px-4 py-2 border ${errors.confirmPassword ? 'border-red-300' : 'border-gray-300'} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
+                  placeholder="••••••••"
+                />
+              </div>
+              {errors.confirmPassword && <p className="text-red-500 text-xs mt-1">{errors.confirmPassword}</p>}
+            </div>
+          </div>
+
+          <div className="flex items-center pt-2">
             <input
-              type="email"
-              id="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#b8a9c9] focus:border-transparent"
-              placeholder="email@example.com"
+              type="checkbox"
+              id="terms"
+              name="terms"
+              className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
               required
             />
-          </div>
-
-          <div>
-            <label className="block text-gray-700 text-sm font-medium mb-1" htmlFor="Phone">
-              Phone
+            <label htmlFor="terms" className="ml-2 block text-sm text-gray-700">
+              I agree to the <a href="#" className="text-blue-600 hover:text-blue-800">Terms of Service</a> and <a href="#" className="text-blue-600 hover:text-blue-800">Privacy Policy</a>
             </label>
-            <input
-              type="tel"
-              id="Phone"
-              name="Phone"
-              value={formData.Phone}
-              onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#b8a9c9] focus:border-transparent"
-              placeholder="+1234567890"
-              required
-            />
           </div>
 
-          <div>
-            <label className="block text-gray-700 text-sm font-medium mb-1" htmlFor="location">
-              Location (City/State)
-            </label>
-            <input
-              type="text"
-              id="location"
-              name="location"
-              value={formData.location}
-              onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#b8a9c9] focus:border-transparent"
-              placeholder="New York, NY"
-            />
-          </div>
-
-          <div>
-            <label className="block text-gray-700 text-sm font-medium mb-1" htmlFor="gender">
-              Gender
-            </label>
-            <select
-              id="gender"
-              name="gender"
-              value={formData.gender}
-              onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#b8a9c9] focus:border-transparent"
-              required
-            >
-              <option value="">Select your Gender</option>
-              <option value="Male">Male</option>
-              <option value="Female">Female</option>  
-              <option value="Other">Other</option>    
-            </select>
-          </div>
-
-          <div className="pt-2">
+          <div className="pt-4">
             <button
               type="submit"
-              className="w-full bg-[#d099d9] hover:bg-[#d099d9] text-gray-800 font-medium py-2 px-4 rounded-lg transition duration-200 focus:outline-none focus:ring-2 focus:ring-[#c9c9f0] focus:ring-offset-2"
+              className="w-full bg-gradient-to-r from-blue-600 to-teal-500 hover:from-blue-700 hover:to-teal-600 text-white font-medium py-3 px-4 rounded-lg transition duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 shadow-md"
             >
-              Sign Up
+              Create Account
             </button>
           </div>
 
-          <div className="text-center text-sm text-gray-500 pt-2">
-            Already have an account? 
-            <a href="#" className="text-[#d099d9] hover:text-gray-800 pl-1">Sign in</a>
+          <div className="text-center text-sm text-gray-600 pt-2">
+            Already have an account?{' '}
+            <a href="#" className="font-medium text-blue-600 hover:text-blue-800">
+              Sign in
+            </a>
           </div>
         </form>
       </div>
