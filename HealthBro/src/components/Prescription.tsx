@@ -98,4 +98,3 @@ const Prescription: React.FC<PrescriptionProps> = ({ prescriptions }) => {
 
 
 export default Prescription;
-
