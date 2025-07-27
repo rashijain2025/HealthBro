@@ -51,7 +51,6 @@ const SymptomsChecker: React.FC = () => {
   const analyzeSymptoms = () => {
     setIsAnalyzing(true);
     
-    // Simulate analysis delay
     setTimeout(() => {
       const newCheck: SymptomCheck = {
         id: `SC-${Math.floor(1000 + Math.random() * 9000)}`,
@@ -70,7 +69,6 @@ const SymptomsChecker: React.FC = () => {
   };
 
   const getPossibleConditions = (symptoms: string[]): string[] => {
-    // Enhanced clinical decision logic
     const hasFever = symptoms.some(s => s.toLowerCase().includes('fever'));
     const hasRespiratory = symptoms.some(s => 
       ['cough', 'dyspnea', 'shortness of breath'].some(term => s.toLowerCase().includes(term))
@@ -143,7 +141,7 @@ const SymptomsChecker: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Left Column - Symptom Input */}
+         
           <div className="lg:col-span-1 space-y-6">
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
               <h2 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
@@ -219,7 +217,7 @@ const SymptomsChecker: React.FC = () => {
               </div>
             </div>
 
-            {/* Quick Reference */}
+          
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
               <h2 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
                 <FiInfo className="mr-2 text-blue-500" />
@@ -247,7 +245,7 @@ const SymptomsChecker: React.FC = () => {
             </div>
           </div>
 
-          {/* Right Column - Results */}
+         
           <div className="lg:col-span-2 space-y-6">
             <h2 className="text-lg font-semibold text-gray-800 flex items-center">
               <FiClock className="mr-2 text-blue-500" />
