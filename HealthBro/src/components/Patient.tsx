@@ -6,14 +6,17 @@ import RiskPredictor from "./RiskPredictor";
 import SymptomsChecker from "./SymptomsChecker";
 import { 
   FaUser, 
-  FaHistory, 
   FaChartLine, 
   FaStethoscope, 
-  FaPills 
+  FaPills,
+  FaChevronRight,
+  FaHospital,
+  FaNotesMedical
 } from "react-icons/fa";
 
 const Patient = () => {  
   const [activeTab, setActiveTab] = useState<string>('profile');
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   const [patientData] = useState({
     name: 'John Doe',
@@ -27,10 +30,7 @@ const Patient = () => {
   const renderTabContent = () => {
     switch (activeTab) {
       case 'profile':
-        return <Profile 
-                 patientData={patientData} 
-                 onBack={() => console.log("Back button clicked")} 
-               />;
+        return <Profile patientData={patientData} onBack={() => console.log("Back button clicked")} />;
       case 'history':
         return <MedicalHistory emergencies={[]} />;
       case 'risk':
@@ -40,95 +40,92 @@ const Patient = () => {
       case 'prescription':
         return <Prescription prescriptions={[]} />;
       default:
-        return <Profile 
-                 patientData={patientData} 
-                 onBack={() => console.log("Back button clicked")} 
-               />;
+        return <Profile patientData={patientData} onBack={() => console.log("Back button clicked")} />;
     }
   };
 
   return (
-    <div className="min-h-screen flex flex-col" style={{ backgroundColor: '#F1EDF4' }}>
-      {/*  Header Section */}
-      <div className="text-black p-4 shadow-md" style={{ backgroundColor: '#d099d9' }}>
-        <h1 className="text-2xl font-bold text-center">Patient Dashboard</h1>
-      </div>
+    <div className="min-h-screen flex flex-col bg-blue-50">
+      {/* Header Section */}
+      <header className="bg-white border-b border-blue-100 shadow-sm">
+        <div className="max-w-7xl mx-auto flex justify-between items-center p-4">
+          <div className="flex items-center space-x-3">
+            <FaHospital className="text-blue-600 text-2xl" />
+            <h1 className="text-2xl font-bold text-blue-800">HealthBro</h1>
+          </div>
+          <div className="flex items-center space-x-4">
+            <span className="text-sm bg-blue-100 text-blue-800 px-3 py-1 rounded-full font-medium">
+              {patientData.name}
+            </span>
+            <div className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center">
+              <FaUser className="text-sm" />
+            </div>
+          </div>
+        </div>
+      </header>
 
       <div className="flex flex-1">
         {/* Sidebar Navigation */}
-        <div className="w-48 bg-[#F1EDF4] p-2 shadow">
-          <nav className="space-y-2">
-            <button
-              className={`w-full flex items-center p-2 text-sm rounded transition font-semibold ${activeTab === 'profile' ? 'font-bold' : 'hover:bg-[#b8a9c9]'}`}
-              style={{ 
-                backgroundColor: activeTab === 'profile' ? '#d099d9' : 'transparent',
-                color: activeTab === 'profile' ? 'white' : 'black'
-              }}
-              onClick={() => setActiveTab('profile')}
+        <div 
+          className={`bg-white border-r border-blue-100 transition-all duration-300 ease-in-out ${sidebarCollapsed ? 'w-16' : 'w-56'}`}
+        >
+          <div className="p-3 flex justify-between items-center border-b border-blue-50">
+            {!sidebarCollapsed && <span className="text-xs font-medium text-blue-400"></span>}
+            <button 
+              onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+              className="p-1 rounded-md hover:bg-blue-50 text-blue-400"
             >
-              <FaUser className="mr-2" />
-              Profile
+              <FaChevronRight className={`transition-transform ${sidebarCollapsed ? '' : 'rotate-180'}`} />
             </button>
-            <button
-              className={`w-full flex items-center p-2 text-sm rounded transition font-semibold ${activeTab === 'history' ? 'font-bold' : 'hover:bg-[#b8a9c9]'}`}
-              style={{ 
-                backgroundColor: activeTab === 'history' ? '#d099d9' : 'transparent',
-                color: activeTab === 'history' ? 'white' : 'black'
-              }}
-              onClick={() => setActiveTab('history')}
-            >
-              <FaHistory className="mr-2" />
-              Medical History
-            </button>
-            <button
-              className={`w-full flex items-center p-2 text-sm rounded transition font-semibold ${activeTab === 'risk' ? 'font-bold' : 'hover:bg-[#b8a9c9]'}`}
-              style={{ 
-                backgroundColor: activeTab === 'risk' ? '#d099d9' : 'transparent',
-                color: activeTab === 'risk' ? 'white' : 'black'
-              }}
-              onClick={() => setActiveTab('risk')}
-            >
-              <FaChartLine className="mr-2" />
-              Risk Assessment
-            </button>
-            <button
-              className={`w-full flex items-center p-2 text-sm rounded transition font-semibold ${activeTab === 'symptoms' ? 'font-bold' : 'hover:bg-[#b8a9c9]'}`}
-              style={{ 
-                backgroundColor: activeTab === 'symptoms' ? '#d099d9' : 'transparent',
-                color: activeTab === 'symptoms' ? 'white' : 'black'
-              }}
-              onClick={() => setActiveTab('symptoms')}
-            >
-              <FaStethoscope className="mr-2" />
-              Symptoms Checker
-            </button>
-            <button
-              className={`w-full flex items-center p-2 text-sm rounded transition font-semibold ${activeTab === 'prescription' ? 'font-bold' : 'hover:bg-[#b8a9c9]'}`}
-              style={{ 
-                backgroundColor: activeTab === 'prescription' ? '#d099d9' : 'transparent',
-                color: activeTab === 'prescription' ? 'white' : 'black'
-              }}
-              onClick={() => setActiveTab('prescription')}
-            >
-              <FaPills className="mr-2" />
-              Prescriptions
-            </button>
+          </div>
+          <nav className="space-y-1 p-2">
+            {[
+              { id: 'profile', icon: <FaUser className="text-blue-500" />, label: 'Patient Profile' },
+              { id: 'history', icon: <FaNotesMedical className="text-blue-500" />, label: 'Medical History' },
+              { id: 'risk', icon: <FaChartLine className="text-blue-500" />, label: 'Health Assessment' },
+              { id: 'symptoms', icon: <FaStethoscope className="text-blue-500" />, label: 'Symptom Tracker' },
+              { id: 'prescription', icon: <FaPills className="text-blue-500" />, label: 'Medications' }
+            ].map((item) => (
+              <button
+                key={item.id}
+                className={`w-full flex items-center p-3 rounded-lg transition-all duration-200 ${
+                  activeTab === item.id 
+                    ? 'bg-blue-600 text-white shadow-sm' 
+                    : 'text-gray-600 hover:bg-blue-50 hover:text-blue-700'
+                }`}
+                onClick={() => setActiveTab(item.id)}
+              >
+                <span className="text-lg">{item.icon}</span>
+                {!sidebarCollapsed && (
+                  <span className="ml-3 font-medium text-sm">{item.label}</span>
+                )}
+              </button>
+            ))}
           </nav>
         </div>
 
         {/* Main Content Area*/}
-        <div className="flex-1 bg-white p-6 overflow-auto">
-          <div className="max-w-4xl mx-auto mt-4">
-            {renderTabContent()}
+        <div className="flex-1 p-6 overflow-auto bg-blue-50">
+          <div className={`max-w-5xl mx-auto ${sidebarCollapsed ? 'ml-2' : 'ml-4'}`}>
+            <div className="bg-white rounded-lg shadow-sm border border-blue-100 p-6">
+              {renderTabContent()}
+            </div>
           </div>
         </div>
       </div>
 
       {/* Footer */}
-      <div className="py-1 px-2 border-t text-xs text-center text-gray-600" style={{ backgroundColor: '#F1EDF4' }}>
-        <span>Last updated: {new Date().toLocaleDateString()} | </span>
-        <span style={{ color: '#d099d9' }}>Patient ID: P-{patientData.phone.slice(-4)}</span>
-      </div>
+      <footer className="py-3 px-4 border-t border-blue-100 bg-white text-xs text-center text-gray-500">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center">
+          <span>© {new Date().getFullYear()} MedCare Health Systems</span>
+          <div className="space-x-4 mt-2 md:mt-0">
+            <span>Last updated: {new Date().toLocaleDateString()}</span>
+            <span className="font-medium text-blue-600">
+              Patient ID: P-{patientData.phone.slice(-4)}
+            </span>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 };
